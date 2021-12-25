@@ -6,9 +6,9 @@ import akka.actor.{Actor, ActorRef}
 class Client(systemService: ActorRef) extends Actor{
   def receive: Receive = {
     case SearchResult(list: List[Property]) =>
-      // pick random and reserve at systemService
-    case msg => println(msg)
+      println(list)
+    case msg => println(s"unrecognized message: $msg")
   }
 
-  systemService ! Search("hotel", "25-12-2021", category = Some(3)) // test call to check searching
+  systemService ! Search("hotel", "25-12-2021", self, category = Some(4)) // test call to check searching
 }
