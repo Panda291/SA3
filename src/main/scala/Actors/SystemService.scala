@@ -1,7 +1,7 @@
 package Actors
 
-import Messages.{AllProperties, Property, Search, SearchResult}
-import akka.actor.{Actor, ActorRef}
+import Messages.{AllProperties, MakeReservation, Property, Search, SearchResult}
+import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 
@@ -30,6 +30,8 @@ class SystemService(reservationService: ActorRef) extends Actor {
               }))
         case msg => println(s"test: $msg")
       })
+    case MakeReservation(property, replyTo) =>
+      context.system.actorOf(Props(new childActor(property, replyTo, reservationService)), "childActor")
     case msg => println(s"unrecognized message: $msg")
   }
 }
