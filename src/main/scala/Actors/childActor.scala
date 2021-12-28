@@ -4,18 +4,18 @@ import Messages.{CacheInvalidated, MakeReservation, Property, ReservationAcknowl
 import akka.actor.Actor.Receive
 import akka.actor.{Actor, ActorRef}
 
-class childActor(property: Property, client: ActorRef, systemService: ActorRef, reservationService: ActorRef) extends Actor {
+class childActor(makeReservation: MakeReservation, systemService: ActorRef, reservationService: ActorRef) extends Actor {
   def receive: Receive = {
     case msg: ReservationConfirmed =>
       systemService ! msg
-      client ! msg
+      makeReservation.replyTo ! msg
     case msg: ReservationDenied =>
       systemService ! CacheInvalidated
-      client ! msg
+      makeReservation.replyTo ! msg
     case ReservationAcknowledged => context.stop(self)
     case msg => println(s"unrecognized message: $msg")
   }
 
-  reservationService ! MakeReservation(property, client)
+  reservationService ! makeReservation
 
 }

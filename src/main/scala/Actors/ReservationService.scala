@@ -1,23 +1,35 @@
 package Actors
 
-import Messages.{AllProperties, MakeReservation, Property, ReservationConfirmed, ReservationDenied, SearchResult}
+import Messages._
 import akka.actor.Actor
+
+import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 class ReservationService extends Actor{
     var properties: List[Property] = List(
-      Property(5, "test", "hotel", 5, ("Belgium", "Brussels"), "25-12-2021"),
-      Property(6, "test2", "hotel", 3, ("Belgium", "Antwerp"), "25-12-2021"),
-      Property(7, "test3", "apartment", 4, ("France", "Paris"), "25-12-2021")
+      Property(5, "test", "hotel", 4, ("Belgium", "Brussels")),
+      Property(6, "test2", "apartment", 3, ("Belgium", "Antwerp")),
+      Property(7, "Disney Land", "resort", 5, ("France", "Paris")),
+      Property(8, "test3", "apartment", 5, ("Belgium", "Gent")),
+      Property(9, "test4", "hotel", 3, ("France", "Nice")),
+      Property(10, "Nice hotel", "hotel", 5, ("Germany", "Berlin"))
     )
+  val reservations: mutable.Map[Property, List[String]] = mutable.Map().withDefaultValue(List())
+
   def receive: Receive = {
     case AllProperties =>
 //      println("reservation service")
       sender ! SearchResult(properties)
-    case MakeReservation(property, _) =>
-      if(properties.contains(property)) {
-        properties = properties.filter(_ != property)
-        sender ! ReservationConfirmed(property)
-      } else sender ! ReservationDenied(property)
+    case AllReservations =>
+      sender ! AllReservations(reservations)
+    case MakeReservation(property, date, _) =>
+      if(properties.contains(property) && !reservations(property).contains(date)) { // property exists and is not taken on this date
+        reservations(property) = date :: reservations(property)
+        sender ! ReservationConfirmed(property, date)
+      } else {
+        sender ! ReservationDenied(property, date)
+      }
     case msg => println(s"unrecognized message: $msg")
   }
 }
