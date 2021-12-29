@@ -4,7 +4,6 @@ import Messages._
 import akka.actor.Actor
 
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 
 class ReservationService extends Actor{
     var properties: List[Property] = List(

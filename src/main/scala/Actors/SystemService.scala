@@ -1,19 +1,18 @@
 package Actors
 
-import Messages.{AllProperties, AllReservations, CacheInvalidated, MakeReservation, Property, ReservationConfirmed, Search, SearchResult}
+import Messages._
 import akka.actor.{Actor, ActorRef, Props}
 import akka.pattern.ask
 import akka.util.Timeout
 
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContextExecutor, Future}
 import scala.concurrent.duration.DurationInt
 import scala.language.postfixOps
 
 class SystemService(reservationService: ActorRef) extends Actor {
-  implicit val executionContext = context.dispatcher
-  implicit val timeout = Timeout(5 seconds)
+  implicit val executionContext: ExecutionContextExecutor = context.dispatcher
+  implicit val timeout: Timeout = Timeout(5 seconds)
 
   var propertiesCache: List[Property] = List()
   var reservationCache: mutable.Map[Property, List[String]] = mutable.Map()

@@ -1,7 +1,6 @@
 package Actors
 
-import Messages.{CacheInvalidated, MakeReservation, Property, ReservationAcknowledged, ReservationConfirmed, ReservationDenied}
-import akka.actor.Actor.Receive
+import Messages._
 import akka.actor.{Actor, ActorRef}
 
 class childActor(makeReservation: MakeReservation, systemService: ActorRef, reservationService: ActorRef) extends Actor {
